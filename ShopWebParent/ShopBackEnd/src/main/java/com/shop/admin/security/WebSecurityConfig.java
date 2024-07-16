@@ -14,12 +14,12 @@ public class WebSecurityConfig {
 
     @Bean
     PasswordEncoder PasswordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	
+	return new BCryptPasswordEncoder();
+    }
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests((authz) -> authz.anyRequest().permitAll());
-		return http.build();
-	}
+	http.authorizeHttpRequests((authz) -> authz.anyRequest().permitAll());
+	return http.build();
+    }
 }

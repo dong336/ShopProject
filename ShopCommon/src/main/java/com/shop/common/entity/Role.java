@@ -2,6 +2,8 @@ package com.shop.common.entity;
 
 import java.util.Objects;
 
+import org.hibernate.annotations.Comment;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,9 +18,11 @@ public class Role {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@Comment("이름")
 	@Column(length = 40, nullable = false, unique = true)
 	private String name;
 
+	@Comment("설명")
 	@Column(length = 150, nullable = false)
 	private String description;
 
