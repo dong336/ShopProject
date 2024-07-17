@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0">
-<title>Home - Shop Admin</title>
+<title>Home - Shop 관리자</title>
 
 <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
 <link rel="stylesheet" type="text/css" th:href="@{/fontawesome/all.css}" />
@@ -61,44 +61,120 @@
 				</div>
 			</nav>
 		</div>
-		<div>
+		<div class="m-2">
 			<h2>회원 관리</h2>
-			<a th:href="@{/users/new}">새 사용자 등록</a>
+			<div class="full-details">
+				<a th:href="@{/users/new}" class="btn btn-success mr-2">새 사용자 등록</a>
+				<a th:href="@{/users/export/csv}" class="btn btn-info mr-2">CSV 다운로드</a>
+				<a th:href="@{/users/export/excel}" class="btn btn-info mr-2">Excel 다운로드</a>
+				<a th:href="@{/users/export/pdf}" class="btn btn-info mr-2">PDF 다운로드</a>
+			</div>
+			<div class="less-details">
+				<a th:href="@{/users/new}" class="fa-solid fa-user-plus fa-2x icon-dark mr-2"></a>
+				<a th:href="@{/users/export/csv}" class="fa-solid fa-file-csv fa-2x icon-dark mr-2"></a>
+				<a th:href="@{/users/export/excel}" class="fa-solid fa-file-excel fa-2x icon-dark mr-2"></a>
+				<a th:href="@{/users/export/pdf}" class="fa-solid fa-file-pdf fa-2x icon-dark mr-2"></a>
+			</div>
 		</div>
 
 		<div th:if="${message != null}" class="alert alert-success text-center">[[${message}]]</div>
 
 		<div>
+			<form th:action="@{/users/page/1}" class="form-inline m-3">
+				<input type="hidden" name="sortField" th:value="${sortField}" />
+				<input type="hidden" name="sortDir" th:value="${sortDir}" />
+				검색:&nbsp;
+				<input type="search" name="keyword" th:value="${keyword}" class="form-control" required />
+				&nbsp;&nbsp;
+				<button type="submit" class="btn btn-primary">
+					<i class="fas fa-search"></i>
+				</button>
+				&nbsp;&nbsp;
+				<button type="button" class="btn btn-secondary" onclick="clearFilter();">
+					<i class="fas fa-eraser"></i>
+				</button>
+			</form>
+		</div>
+
+		<div class="full-details">
 			<table class="table table-bordered table-striped table-hover table-responsive-xl">
 				<thead class="thead-dark">
 					<tr>
-						<th>ID</th>
+						<th class="hideable-column">
+						<th th:replace="~{fragments :: column_link('id', 'ID', 'tag')}" />
+						</th>
 						<th>사진</th>
-						<th>메일</th>
-						<th>이름</th>
+						<th class="hideable-column">
+						<th th:replace="~{fragments :: column_link('email', '메일', 'tag')}" />
+						</th>
+						<th th:replace="~{fragments :: column_link('name', '이름', 'none')}" />
 						<th>권한</th>
-						<th>활성화</th>
+						<th th:replace="~{fragments :: column_link('enabled', '활성화', 'none')}" />
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr th:each="user : ${listUsers}">
-						<td>[[${user.id}]]</td>
-						<td>
-							<span th:if="${user.photos == null}" class="fa-solid fa-image-portrait fa-3x icon-silver"></span>
-							<img th:if="${user.photos != null}" th:src="@{${user.photosImagePath}}" style="width: 100px;"/>
-						</td>
-						<td>[[${user.email}]]</td>
+						<td class="hideable-column">[[${user.id}]]</td>
+						<td><span th:if="${user.photos == null}" class="fa-solid fa-image-portrait fa-3x icon-silver"></span> <img th:if="${user.photos != null}" th:src="@{${user.photosImagePath}}" style="width: 100px;" /></td>
+						<td class="hideable-column">[[${user.email}]]</td>
 						<td>[[${user.name}]]</td>
 						<td>[[${user.roles}]]</td>
-						<td>
-							<a th:if="${user.enabled == true}" class="fas fa-check-circle fa-2x icon-green" th:href="@{'/users/' + ${user.id} + '/enabled/false'}" title="비활성화"></a> 
-							<a th:if="${user.enabled == false}" class="fas fa-check-circle fa-2x icon-dark" th:href="@{'/users/' + ${user.id} + '/enabled/true'}" title="활성화"></a>
-						</td>
+						<td><a th:if="${user.enabled == true}" class="fas fa-check-circle fa-2x icon-green" th:href="@{'/users/' + ${user.id} + '/enabled/false'}" title="비활성화"></a> <a th:if="${user.enabled == false}" class="fas fa-check-circle fa-2x icon-dark" th:href="@{'/users/' + ${user.id} + '/enabled/true'}" title="활성화"></a></td>
 						<td><a class="fa-solid fa-pen-to-square fa-2x icon-green" th:href="@{'/users/edit/' + ${user.id}}" title="수정"></a> &nbsp; <a class="fa-solid fa-trash fa-2x icon-dark link-delete" th:href="@{'/users/delete/' + ${user.id}}" th:userId="${user.id}" title="삭제"></a></td>
 					</tr>
 				</tbody>
 			</table>
+		</div>
+
+		<div class="less-details">
+			<div th:each="user : ${listUsers}" class="row m-1">
+				<div class="col-4">
+					<span th:if="${user.photos == null}" class="fa-solid fa-image-portrait fa-3x icon-silver"></span> <img th:if="${user.photos != null}" th:src="@{${user.photosImagePath}}" style="width: 100px;" />
+				</div>
+				<div class="col-8">
+					<div>[[${user.name}]]</div>
+					<div>[[${user.roles}]]</div>
+					<div class="mt-2">
+						<a th:if="${user.enabled == true}" class="fas fa-check-circle fa-2x icon-green" th:href="@{'/users/' + ${user.id} + '/enabled/false'}" title="비활성화"></a>
+						<a th:if="${user.enabled == false}" class="fas fa-check-circle fa-2x icon-dark" th:href="@{'/users/' + ${user.id} + '/enabled/true'}" title="활성화"></a>
+						&nbsp;
+						<a class="fa-solid fa-pen-to-square fa-2x icon-green" th:href="@{'/users/edit/' + ${user.id}}" title="수정"></a>
+						&nbsp;
+						<a class="fa-solid fa-trash fa-2x icon-dark link-delete" th:href="@{'/users/delete/' + ${user.id}}" th:userId="${user.id}" title="삭제"></a>
+					</div>
+				</div>
+				<div>&nbsp;</div>
+			</div>
+		</div>
+
+		<div class="text-center m-1" th:if="${totalItems > 0}">
+			<span>사용자 # [[${startCount}]] ~ [[${endCount}]] , 전체: [[${totalItems}]]</span>
+		</div>
+		<div class="text-center m-1" th:unless="${totalItems > 0}">
+			<span>사용자 없음</span>
+		</div>
+
+		<div th:if="${totalPages > 1}">
+			<nav>
+				<ul class="pagination justify-content-center flex-wrap">
+					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(1, '&lt;&lt;')}"></a>
+					</li>
+					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(${currentPage - 1}, '&lt;')}"></a>
+					</li>
+					<li th:class="${currentPage != i ? 'page-item': 'page-item active'}" th:each="i : ${#numbers.sequence(1, totalPages, 1)}">
+						<a th:replace="~{fragments :: page_link(${i}, ${i})}"></a>
+					</li>
+					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(${currentPage + 1}, '&gt;')}"></a>
+					</li>
+					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(${totalPages}, '&gt;&gt;')}"></a>
+					</li>
+				</ul>
+			</nav>
 		</div>
 
 		<div class="modal fade text-center" id="confirmModal">
@@ -135,6 +211,10 @@
 				$("#confirmModal").modal();
 			});
 		});
+
+		function clearFilter() {
+			window.location = "[[@{/users}]]";
+		}
 	</script>
 </body>
 </html>
