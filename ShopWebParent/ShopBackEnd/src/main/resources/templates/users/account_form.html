@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: page_head('나의 계정 상세')}">
+<body>
+	<div class="container-fluid">
+		<div th:replace="~{navigation :: menu}"></div>
+
+		<form th:action="@{/account/update}" method="post" style="max-width: 700px; margin: 0 auto;" th:object="${user}" enctype="multipart/form-data">
+			<input type="hidden" th:field="*{id}" />
+			<div class="text-center">
+				<h2>나의 계정정보 상세</h2>
+			</div>
+			
+			<div th:if="${message != null}" class="alert alert-success text-center">[[${message}]]</div>
+			
+			<div class="border border-secondary rounded p-3">
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">이메일:</label>
+					<div class="col-sm-8">
+						<input type="email" class="form-control" th:field="*{email}" readonly="readonly" />
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">비밀번호:</label>
+					<div class="col-sm-8">
+						<input type="password" th:field="*{password}" class="form-control" placeholder="작성하지 않을시 비밀번호가 변경되지 않습니다." minlength="7" maxlength="40" oninput="checkPasswordMatch(document.getElementById('confirmPassword'));"/>
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">비밀번호 확인:</label>
+					<div class="col-sm-8">
+						<input type="password" id="confirmPassword" class="form-control" placeholder="" minlength="7" maxlength="40" oninput="checkPasswordMatch(this);"/>
+					</div>
+				</div>				
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">이름:</label>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" th:field="*{name}" required minlength="3" maxlength="40" />
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">권한:</label>
+					<div class="col-sm-8">
+						<span><b>[[${user.roles}]]</b></span>
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">사진:</label>
+					<div class="col-sm-8">
+						<input type="hidden" th:field="*{photos}" />
+						<input type="file" id="fileImage" name="image" accept="image/png, image/jpeg" class="mb-2" />
+						<img id="thumbnail" th:src="@{${user.photosImagePath}}" alt="미리보기" class="img-fluid" />
+					</div>
+				</div>
+				<div class="text-center">
+					<input type="submit" value="등록" class="btn btn-primary m-3" />
+					<input type="button" value="취소" class="btn btn-secondary" id="buttonCancel" />
+				</div>
+			</div>
+		</form>
+		
+		<div th:replace="~{fragments :: footer}"></div>
+	</div>
+	<script type="text/javascript">
+		moduleURL = "[[@{/}]]";
+	
+		function checkPasswordMatch(confirmPassword) {
+			if(confirmPassword.value != $("#password").val()) {
+				confirmPassword.setCustomValidity("비밀번호가 일치하지 않습니다.");
+			} else {
+				confirmPassword.setCustomValidity("");
+			}
+		}
+	</script>
+	<script th:src="@{/js/common_form.js}"></script>
+</body>
+</html>

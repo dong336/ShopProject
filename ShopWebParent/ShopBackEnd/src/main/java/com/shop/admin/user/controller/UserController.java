@@ -1,4 +1,4 @@
-package com.shop.admin.user;
+package com.shop.admin.user.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,6 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.shop.admin.FileUploadUtil;
+import com.shop.admin.user.UserNotFoundException;
+import com.shop.admin.user.UserService;
+import com.shop.admin.user.export.UserCsvExporter;
+import com.shop.admin.user.export.UserExcelExporter;
+import com.shop.admin.user.export.UserPdfExporter;
 import com.shop.common.entity.Role;
 import com.shop.common.entity.User;
 
@@ -35,8 +40,6 @@ public class UserController {
 
     @GetMapping("/users/page/{pageNum}")
     public String listByPage(@PathVariable(name = "pageNum") int pageNum, Model model, @Param("sortField") String sortField, @Param("sortDir") String sortDir, @Param("keyword") String keyword) {
-	System.out.println("Sort Field: " + sortField);
-	System.out.println("Sort Dir: " + sortDir);
 	Page<User> page = service.listByPage(pageNum, sortField, sortDir, keyword);
 	List<User> listUsers = page.getContent();
 
@@ -60,7 +63,7 @@ public class UserController {
 	model.addAttribute("reverseSortDir", reverseSortDir);
 	model.addAttribute("keyword", keyword);
 
-	return "users";
+	return "users/users";
     }
 
     @GetMapping("/users/new")
@@ -74,7 +77,7 @@ public class UserController {
 	model.addAttribute("listRoles", listRoles);
 	model.addAttribute("pageTitle", "새 사용자 생성");
 
-	return "user_form";
+	return "users/user_form";
     }
 
     @PostMapping("/users/save")
@@ -117,7 +120,7 @@ public class UserController {
 	    model.addAttribute("pageTitle", "사용자 수정 (ID: " + id + ")");
 	    model.addAttribute("listRoles", listRoles);
 
-	    return "user_form";
+	    return "users/user_form";
 	} catch (UserNotFoundException e) {
 	    redirectAttributes.addFlashAttribute("message", e.getMessage());
 

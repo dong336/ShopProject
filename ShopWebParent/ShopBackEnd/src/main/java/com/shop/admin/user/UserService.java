@@ -2,6 +2,7 @@ package com.shop.admin.user;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,10 @@ public class UserService {
 
     @Resource
     private PasswordEncoder passwordEncoder;
+
+    public User getByEmail(String email) {
+	return userRepo.getUserByEmail(email);
+    }
 
     public List<User> listAll() {
 	return (List<User>) userRepo.findAll(Sort.by("name").ascending());
@@ -68,10 +73,26 @@ public class UserService {
 	    }
 	} else {
 	    encodePassword(user);
-
 	}
 
 	return userRepo.save(user);
+    }
+
+    public User updateAccount(User userInForm) {
+	User userInDB = userRepo.findById(userInForm.getId()).get();
+
+	if (!userInDB.getPassword().isEmpty()) {
+	    userInDB.setPassword(userInForm.getPassword());
+	    encodePassword(userInDB);
+	}
+
+	if (userInDB.getPhotos() != null) {
+	    userInDB.setPhotos(userInForm.getPhotos());
+	}
+
+	userInDB.setName(userInForm.getName());
+
+	return userRepo.save(userInDB);
     }
 
     private void encodePassword(User user) {

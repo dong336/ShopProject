@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
-<head th:replace="~{fragments :: page_head('Home - Shop 관리자')}">
+<head th:replace="~{fragments :: page_head('Error - Shop 관리자')}">
+</head>
 <body>
 	<div class="container-fluid">
 		<div th:replace="~{navigation :: menu}"></div>
 
-		<div>
-			<h1>Shop 관리자 대시보드</h1>
-			환영합니다!
-			<a th:href="@{/account}" sec:authentication="principal.realname"></a> 님
-			&nbsp;
-			<span sec:authentication="principal.authorities"></span>
+		<div class="m-3">
+			<h2>요청 처리 도중 서버에서 에러가 발생하였습니다.</h2>
 		</div>
 
 		<div th:replace="~{fragments :: footer}"></div>

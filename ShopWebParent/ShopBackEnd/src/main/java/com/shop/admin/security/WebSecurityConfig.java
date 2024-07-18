@@ -34,11 +34,12 @@ public class WebSecurityConfig {
 	
 	return authProvider;
     }
-
+    
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 	http.authenticationProvider(authenticationProvider());
 	http.authorizeHttpRequests(authz -> authz
+		.requestMatchers("/users/**").hasAnyAuthority("Admin")
 		.anyRequest().authenticated()
 	    )
 	    .formLogin(form -> form
@@ -46,7 +47,10 @@ public class WebSecurityConfig {
 		.usernameParameter("email")
 		.permitAll()
 	    )
-	    .logout(logout -> logout.permitAll());
+	    .logout(logout -> logout.permitAll())
+	    .rememberMe(rem -> rem
+		    .key("abc")
+		    .tokenValiditySeconds(7 * 24 * 60 * 60)); // 7일 후 만료
 	
 	return http.build();
     }

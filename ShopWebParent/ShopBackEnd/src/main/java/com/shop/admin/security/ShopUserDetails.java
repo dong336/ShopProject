@@ -65,4 +65,8 @@ public class ShopUserDetails implements UserDetails {
     public String getRealname() {
 	return this.user.getName();
     }
+    
+    public void setName(String name) {
+	this.user.setName(name);
+    }
 }
