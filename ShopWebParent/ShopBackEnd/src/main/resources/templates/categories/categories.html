@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: page_head('카테고리 목록 - Shop 관리자')}">
+<body>
+	<div class="container-fluid">
+		<div th:replace="~{navigation :: menu}"></div>
+		
+		<div class="m-2">
+			<h2>카테고리 관리</h2>
+			<div class="full-details">
+				<a th:href="@{/categories/new}" class="btn btn-success mr-2">새 카테고리 등록</a>
+				<a th:href="@{/categories/export/csv}" class="btn btn-info mr-2">CSV 다운로드</a>
+				<a th:href="@{/categories/export/excel}" class="btn btn-info mr-2">Excel 다운로드</a>
+				<a th:href="@{/categories/export/pdf}" class="btn btn-info mr-2">PDF 다운로드</a>
+			</div>
+			<div class="less-details">
+				<a th:href="@{/categories/new}" class="fa-solid fa-user-plus fa-2x icon-dark mr-2"></a>
+				<a th:href="@{/categories/export/csv}" class="fa-solid fa-file-csv fa-2x icon-dark mr-2"></a>
+				<a th:href="@{/categories/export/excel}" class="fa-solid fa-file-excel fa-2x icon-dark mr-2"></a>
+				<a th:href="@{/categories/export/pdf}" class="fa-solid fa-file-pdf fa-2x icon-dark mr-2"></a>
+			</div>
+		</div>
+
+		<div th:if="${message != null}" class="alert alert-success text-center">[[${message}]]</div>
+
+		<div>
+			<form th:action="@{/users/page/1}" class="form-inline m-3">
+				<input type="hidden" name="sortField" th:value="${sortField}" />
+				<input type="hidden" name="sortDir" th:value="${sortDir}" />
+				검색:&nbsp;
+				<input type="search" name="keyword" th:value="${keyword}" class="form-control" required />
+				&nbsp;&nbsp;
+				<button type="submit" class="btn btn-primary">
+					<i class="fas fa-search"></i>
+				</button>
+				&nbsp;&nbsp;
+				<button type="button" class="btn btn-secondary" onclick="clearFilter();">
+					<i class="fas fa-eraser"></i>
+				</button>
+			</form>
+		</div>
+
+		<div class="full-details">
+			<table class="table table-bordered table-striped table-hover table-responsive-xl">
+				<thead class="thead-dark">
+					<tr>
+						<th>ID</th>
+						<th>이미지</th>
+						<th>카테고리 명</th>
+						<th>별칭</th>
+						<th>활성화</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="cate : ${listCategories}">
+						<td>[[${cate.id}]]</td>
+						<td>
+							<img th:src="@{${cate.imagePath}}" style="width: 100px;" class="img-fluid"/>
+						</td>
+						<td>[[${cate.name}]]</td>
+						<td>[[${cate.alias}]]</td>
+						<td><a th:if="${cate.enabled == true}" class="fas fa-check-circle fa-2x icon-green" th:href="@{'/categories/' + ${cate.id} + '/enabled/false'}" title="비활성화"></a> <a th:if="${cate.enabled == false}" class="fas fa-check-circle fa-2x icon-dark" th:href="@{'/categories/' + ${cate.id} + '/enabled/true'}" title="활성화"></a></td>
+						<td><a class="fa-solid fa-pen-to-square fa-2x icon-green" th:href="@{'/categories/edit/' + ${cate.id}}" title="수정"></a> &nbsp; <a class="fa-solid fa-trash fa-2x icon-dark link-delete" th:href="@{'/cate/delete/' + ${cate.id}}" title="삭제"></a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="less-details">
+			<div th:each="user : ${listUsers}" class="row m-1">
+				<div class="col-4">
+					<span th:if="${user.photos == null}" class="fa-solid fa-image-portrait fa-3x icon-silver"></span> <img th:if="${user.photos != null}" th:src="@{${user.photosImagePath}}" style="width: 100px;" />
+				</div>
+				<div class="col-8">
+					<div>[[${user.name}]]</div>
+					<div>[[${user.roles}]]</div>
+					<div class="mt-2">
+						<a th:if="${user.enabled == true}" class="fas fa-check-circle fa-2x icon-green" th:href="@{'/users/' + ${user.id} + '/enabled/false'}" title="비활성화"></a>
+						<a th:if="${user.enabled == false}" class="fas fa-check-circle fa-2x icon-dark" th:href="@{'/users/' + ${user.id} + '/enabled/true'}" title="활성화"></a>
+						&nbsp;
+						<a class="fa-solid fa-pen-to-square fa-2x icon-green" th:href="@{'/users/edit/' + ${user.id}}" title="수정"></a>
+						&nbsp;
+						<a class="fa-solid fa-trash fa-2x icon-dark link-delete" th:href="@{'/users/delete/' + ${user.id}}" th:userId="${user.id}" title="삭제"></a>
+					</div>
+				</div>
+				<div>&nbsp;</div>
+			</div>
+		</div>
+
+		<div class="text-center m-1" th:if="${totalItems > 0}">
+			<span>목록 # [[${startCount}]] ~ [[${endCount}]] , 전체: [[${totalItems}]]</span>
+		</div>
+		<div class="text-center m-1" th:unless="${totalItems > 0}">
+			<span>목록 없음</span>
+		</div>
+
+		<div th:if="${totalPages > 1}">
+			<nav>
+				<ul class="pagination justify-content-center flex-wrap">
+					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(1, '&lt;&lt;')}"></a>
+					</li>
+					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(${currentPage - 1}, '&lt;')}"></a>
+					</li>
+					<li th:class="${currentPage != i ? 'page-item': 'page-item active'}" th:each="i : ${#numbers.sequence(1, totalPages, 1)}">
+						<a th:replace="~{fragments :: page_link(${i}, ${i})}"></a>
+					</li>
+					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(${currentPage + 1}, '&gt;')}"></a>
+					</li>
+					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(${totalPages}, '&gt;&gt;')}"></a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+
+		<div class="modal fade text-center" id="confirmModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">삭제 확인</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<span id="confirmText"></span>
+					</div>
+					<div class="modal-footer">
+						<a class="btn btn-success" href="" id="yesButton">예</a>
+						<button type="button" class="btn btn-danger" data-dismiss="modal">아니오</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div th:replace="~{fragments :: footer}"></div>
+		
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$(".link-delete").on("click", function(e) {
+				e.preventDefault();
+				link = $(this);
+				userId = link.attr("userId");
+
+				$("#yesButton").attr("href", link.attr("href"));
+				$("#confirmText").text("이 사용자를 삭제 하시겠습니까?");
+				$("#confirmModal").modal();
+			});
+		});
+
+		function clearFilter() {
+			window.location = "[[@{/users}]]";
+		}
+	</script>
+</body>
+</html>

@@ -82,6 +82,12 @@ public class UserController {
 
     @PostMapping("/users/save")
     public String saveUser(User user, RedirectAttributes redirectAttributes, @RequestParam("image") MultipartFile multipartFile) throws IOException {
+	if (user.getId() == null) {
+	    redirectAttributes.addFlashAttribute("message", "사용자 등록 성공");
+	} else {
+	    redirectAttributes.addFlashAttribute("message", "사용자 변경 성공");
+	}
+	
 	if (!multipartFile.isEmpty()) {
 	    String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 
@@ -98,9 +104,7 @@ public class UserController {
 
 	    service.save(user);
 	}
-
-	redirectAttributes.addFlashAttribute("message", "사용자 등록 성공");
-
+	
 	return getRedirectURLtoAffectedUser(user);
     }
 

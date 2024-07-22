@@ -6,8 +6,8 @@ $(document).ready(function() {
 	$("#fileImage").change(function() {
 		fileSize = this.files[0].size;
 
-		if (fileSize > 1048576) {
-			this.setCustomValidity("파일 사이즈는 1MB 를 넘지 않아야 합니다.");
+		if (fileSize > 102400) {
+			this.setCustomValidity("파일 사이즈는 100KB 를 넘지 않아야 합니다.");
 			this.reportValidity();
 		} else {
 			this.setCustomValidity("");
@@ -25,4 +25,14 @@ function showImageThumbnail(fileInput) {
 	}
 
 	reader.readAsDataURL(file);
+}
+
+function showModalDialog(title, message) {
+		$("#modalTitle").text(title);
+		$("#modalBody").text(message);
+		$("#modalDialog").modal();
+}
+		
+function showErrorModal(message) {
+		showModalDialog("오류", message);
 }
