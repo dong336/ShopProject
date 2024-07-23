@@ -46,7 +46,10 @@
 					<tr>
 						<th>ID</th>
 						<th>이미지</th>
-						<th>카테고리 명</th>
+						<th>
+							<a class="text-white" th:href="@{'/categories?sortDir=' + ${reverseSortDir}}">카테고리 명</a>
+							<span th:class="${reverseSortDir == 'desc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+						</th>
 						<th>별칭</th>
 						<th>활성화</th>
 						<th></th>
