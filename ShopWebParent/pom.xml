@@ -22,8 +22,8 @@
 	</properties>
 
 	<modules>
-		<module>ShopBackEnd</module>
-		<module>ShopFrontEnd</module>
+		<module>ShopBackOffice</module>
+		<module>ShopFrontOffice</module>
 	</modules>
 
 	<dependencies>

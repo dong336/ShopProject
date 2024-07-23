@@ -9,8 +9,8 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ShopBackEnd</artifactId>
-	<name>ShopBackEnd</name>
+	<artifactId>ShopBackOffice</artifactId>
+	<name>ShopBackOffice</name>
 	<description>Shop admin</description>
 
 	<properties>

@@ -22,7 +22,7 @@ spring:
 #  file.name: Shop-beckend.log
 #  logback:
 #    rollingpolicy:
-#      file-name-pattern: Shop-backend-%d{yyyy-MM-dd}.%i.log
+#      file-name-pattern: Shop-BackOffice-%d{yyyy-MM-dd}.%i.log
 #      max-file-size: 100KB
 #      total-size-cap: 1MB
 #      max-history: 100

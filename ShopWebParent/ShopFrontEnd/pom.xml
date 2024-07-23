@@ -8,8 +8,8 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>ShopFrontEnd</artifactId>
-	<name>ShopFrontEnd</name>
+	<artifactId>ShopFrontOffice</artifactId>
+	<name>ShopFrontOffice</name>
 	<description>shop front end</description>
 
 	<properties>
