@@ -23,23 +23,8 @@
 
 		<div th:if="${message != null}" class="alert alert-success text-center">[[${message}]]</div>
 
-		<div>
-			<form th:action="@{/users/page/1}" class="form-inline m-3">
-				<input type="hidden" name="sortField" th:value="${sortField}" />
-				<input type="hidden" name="sortDir" th:value="${sortDir}" />
-				검색:&nbsp;
-				<input type="search" name="keyword" th:value="${keyword}" class="form-control" required />
-				&nbsp;&nbsp;
-				<button type="submit" class="btn btn-primary">
-					<i class="fas fa-search"></i>
-				</button>
-				&nbsp;&nbsp;
-				<button type="button" class="btn btn-secondary" onclick="clearFilter();">
-					<i class="fas fa-eraser"></i>
-				</button>
-			</form>
-		</div>
-
+		<div th:replace="~{fragments :: search_form('/users/page/1')}"></div>
+		
 		<div class="full-details">
 			<table class="table table-bordered table-striped table-hover table-responsive-xl">
 				<thead class="thead-dark">
@@ -89,67 +74,22 @@
 				<div>&nbsp;</div>
 			</div>
 		</div>
+		
+		<div th:replace="~{fragments :: pagination('/users', '사용자')}"></div>
 
-		<div class="text-center m-1" th:if="${totalItems > 0}">
-			<span>사용자 # [[${startCount}]] ~ [[${endCount}]] , 전체: [[${totalItems}]]</span>
-		</div>
-		<div class="text-center m-1" th:unless="${totalItems > 0}">
-			<span>사용자 없음</span>
-		</div>
-
-		<div th:if="${totalPages > 1}">
-			<nav>
-				<ul class="pagination justify-content-center flex-wrap">
-					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
-						<a th:replace="~{fragments :: page_link(1, '&lt;&lt;')}"></a>
-					</li>
-					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
-						<a th:replace="~{fragments :: page_link(${currentPage - 1}, '&lt;')}"></a>
-					</li>
-					<li th:class="${currentPage != i ? 'page-item': 'page-item active'}" th:each="i : ${#numbers.sequence(1, totalPages, 1)}">
-						<a th:replace="~{fragments :: page_link(${i}, ${i})}"></a>
-					</li>
-					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
-						<a th:replace="~{fragments :: page_link(${currentPage + 1}, '&gt;')}"></a>
-					</li>
-					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
-						<a th:replace="~{fragments :: page_link(${totalPages}, '&gt;&gt;')}"></a>
-					</li>
-				</ul>
-			</nav>
-		</div>
-
-		<div class="modal fade text-center" id="confirmModal">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">삭제 확인</h4>
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-					</div>
-					<div class="modal-body">
-						<span id="confirmText"></span>
-					</div>
-					<div class="modal-footer">
-						<a class="btn btn-success" href="" id="yesButton">예</a>
-						<button type="button" class="btn btn-danger" data-dismiss="modal">아니오</button>
-					</div>
-				</div>
-			</div>
-		</div>
+		<div th:replace="~{modal_fragments :: confirm_modal}"></div>
 
 		<div th:replace="~{fragments :: footer}"></div>
 		
 	</div>
 	<script type="text/javascript">
+		const moduleURL = "[[@{/users}]]";
+	
 		$(document).ready(function() {
 			$(".link-delete").on("click", function(e) {
 				e.preventDefault();
-				link = $(this);
-				userId = link.attr("userId");
 
-				$("#yesButton").attr("href", link.attr("href"));
-				$("#confirmText").text("이 사용자를 삭제 하시겠습니까?");
-				$("#confirmModal").modal();
+				showDeleteConfirmModal($(this), "사용자");
 			});
 		});
 
@@ -157,5 +97,6 @@
 			window.location = "[[@{/users}]]";
 		}
 	</script>
+	<script th:src="@{/js/common_list.js}"></script>
 </body>
 </html>

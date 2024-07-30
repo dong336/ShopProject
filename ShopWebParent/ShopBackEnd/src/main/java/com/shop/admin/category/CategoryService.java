@@ -8,16 +8,23 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.shop.common.entity.Category;
 
 import jakarta.annotation.Resource;
 
 @Service
+@Transactional
 public class CategoryService {
-
+    
+    public static final int ROOT_CATEGORIES_PER_PAGE = 4;
+    
     @Resource
     private CategoryRepository repo;
 
@@ -52,15 +59,16 @@ public class CategoryService {
 	return "OK";
     }
 
-    public Category get(Integer id) throws CategoryNotFoundException {
+    public Category get(Integer id) throws CategoryException {
 	try {
 	    return repo.findById(id).get();
 	} catch (NoSuchElementException e) {
-	    throw new CategoryNotFoundException("해당 카테고리를 찾을 수 없습니다 ID: " + id);
+	    throw new CategoryException("해당 카테고리를 찾을 수 없습니다 ID: " + id);
 	}
     }
 
-    public List<Category> listAll(String sortDir) {
+    public List<Category> listByPage(CategoryPageInfo pageInfo, int pageNum, String sortDir,
+	    String keyword) {
 	Sort sort = Sort.by("name");
 
 	if (sortDir.equals("asc")) {
@@ -68,10 +76,32 @@ public class CategoryService {
 	} else if (sortDir.equals("desc")) {
 	    sort = sort.descending();
 	}
+	
+	Pageable pageable = PageRequest.of(pageNum - 1, ROOT_CATEGORIES_PER_PAGE, sort);
+	Page<Category> pageCategories;
+	
+	if (keyword != null && !keyword.isEmpty()) {
+	    pageCategories = repo.search(keyword, pageable);
+	} else {
+	    pageCategories = repo.findRootCategories(pageable);
+	}
+	
+	List<Category> rootCategories = pageCategories.getContent();
+	
+	pageInfo.setTotalElement(pageCategories.getTotalElements());
+	pageInfo.setTotalPages(pageCategories.getTotalPages());
 
-	List<Category> rootCategories = repo.findRootCategories(sort);
-
-	return listHierarchialCategories(rootCategories, sortDir);
+	if (keyword != null && !keyword.isEmpty()) {
+	    List<Category> searchResult = pageCategories.getContent();
+	    
+	    for(Category category : searchResult) {
+		category.setHasChildren(category.getChildren().size() > 0);
+	    }
+	    
+	    return searchResult;
+	} else {
+	    return listHierarchialCategories(rootCategories, sortDir);
+	}
     }
 
     private List<Category> listHierarchialCategories(List<Category> rootCategories, String sortDir) {
@@ -177,5 +207,19 @@ public class CategoryService {
 	sortedChildren.addAll(children);
 
 	return sortedChildren;
+    }
+    
+    public void updateCategoryEnabledStatus(Integer id, boolean enabled) {
+	repo.updateEnabledStatus(id, enabled);
+    }
+    
+    public void delete(Integer id) throws CategoryException {
+	Long countById = repo.countById(id);
+	
+	if (countById == null || countById < 1) {
+	    throw new CategoryException("해당하는 카테고리를 찾을 수 없습니다 ID : " + id);
+	}
+	
+	repo.deleteById(id);
     }
 }

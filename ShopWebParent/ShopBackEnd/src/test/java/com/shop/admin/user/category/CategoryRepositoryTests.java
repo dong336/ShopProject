@@ -26,6 +26,11 @@ public class CategoryRepositoryTests {
     private CategoryRepository repo;
 
     @Test
+    public void test() {
+	System.out.println("   ".trim().isEmpty());
+    }
+    
+    @Test
     public void testCreateAll() {
 	Category category1 = new Category("컴퓨터");
 	Category category2 = new Category("전자제품");

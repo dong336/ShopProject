@@ -122,19 +122,19 @@ public class UserService {
 	return true;
     }
 
-    public User get(Integer id) throws UserNotFoundException {
+    public User get(Integer id) throws UserException {
 	try {
 	    return userRepo.findById(id).get();
 	} catch (NoSuchElementException e) {
-	    throw new UserNotFoundException("존재하지 않는 사용자 (ID: " + id + ")");
+	    throw new UserException("존재하지 않는 사용자 (ID: " + id + ")");
 	}
     }
 
-    public void delete(Integer id) throws UserNotFoundException {
+    public void delete(Integer id) throws UserException {
 	Long countById = userRepo.countById(id);
 
 	if (countById == null || countById == 0) {
-	    throw new UserNotFoundException("존재하지 않는 사용자 (ID: " + id + ")");
+	    throw new UserException("존재하지 않는 사용자 (ID: " + id + ")");
 	}
 
 	userRepo.deleteById(id);

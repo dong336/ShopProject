@@ -46,4 +46,14 @@ public class FileUploadUtil {
 	    LOGGER.error("디렉토리 삭제 실패: " + dirPath);
 	}
     }
+    
+    public static void removeDir(String dir) {
+	cleanDir(dir);
+	
+	try {
+	    Files.delete(Paths.get(dir));
+	} catch (IOException e) {
+	    LOGGER.error("이 디렉토리를 삭제할 수 없습니다 : " + dir);
+	}
+    }
 }

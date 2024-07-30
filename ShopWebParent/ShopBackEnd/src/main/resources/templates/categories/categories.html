@@ -23,22 +23,7 @@
 
 		<div th:if="${message != null}" class="alert alert-success text-center">[[${message}]]</div>
 
-		<div>
-			<form th:action="@{/users/page/1}" class="form-inline m-3">
-				<input type="hidden" name="sortField" th:value="${sortField}" />
-				<input type="hidden" name="sortDir" th:value="${sortDir}" />
-				검색:&nbsp;
-				<input type="search" name="keyword" th:value="${keyword}" class="form-control" required />
-				&nbsp;&nbsp;
-				<button type="submit" class="btn btn-primary">
-					<i class="fas fa-search"></i>
-				</button>
-				&nbsp;&nbsp;
-				<button type="button" class="btn btn-secondary" onclick="clearFilter();">
-					<i class="fas fa-eraser"></i>
-				</button>
-			</form>
-		</div>
+		<div th:replace="~{fragments :: search_form('/categories/page/1')}"></div>
 
 		<div class="full-details">
 			<table class="table table-bordered table-striped table-hover table-responsive-xl">
@@ -47,7 +32,7 @@
 						<th>ID</th>
 						<th>이미지</th>
 						<th>
-							<a class="text-white" th:href="@{'/categories?sortDir=' + ${reverseSortDir}}">카테고리 명</a>
+							<a class="text-white" th:href="@{'/categories/page/' + ${currentPage} + '?sortDir=' + ${reverseSortDir}}">카테고리 명</a>
 							<span th:class="${reverseSortDir == 'desc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
 						</th>
 						<th>별칭</th>
@@ -63,8 +48,12 @@
 						</td>
 						<td>[[${cate.name}]]</td>
 						<td>[[${cate.alias}]]</td>
-						<td><a th:if="${cate.enabled == true}" class="fas fa-check-circle fa-2x icon-green" th:href="@{'/categories/' + ${cate.id} + '/enabled/false'}" title="비활성화"></a> <a th:if="${cate.enabled == false}" class="fas fa-check-circle fa-2x icon-dark" th:href="@{'/categories/' + ${cate.id} + '/enabled/true'}" title="활성화"></a></td>
-						<td><a class="fa-solid fa-pen-to-square fa-2x icon-green" th:href="@{'/categories/edit/' + ${cate.id}}" title="수정"></a> &nbsp; <a class="fa-solid fa-trash fa-2x icon-dark link-delete" th:href="@{'/cate/delete/' + ${cate.id}}" title="삭제"></a></td>
+						<td>
+							<div th:replace="~{fragments :: category_status}"></div>
+						</td>
+						<td>
+							<div th:replace="~{fragments :: category_actions}"></div>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -91,35 +80,6 @@
 			</div>
 		</div>
 
-		<div class="text-center m-1" th:if="${totalItems > 0}">
-			<span>목록 # [[${startCount}]] ~ [[${endCount}]] , 전체: [[${totalItems}]]</span>
-		</div>
-		<div class="text-center m-1" th:unless="${totalItems > 0}">
-			<span>목록 없음</span>
-		</div>
-
-		<div th:if="${totalPages > 1}">
-			<nav>
-				<ul class="pagination justify-content-center flex-wrap">
-					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
-						<a th:replace="~{fragments :: page_link(1, '&lt;&lt;')}"></a>
-					</li>
-					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
-						<a th:replace="~{fragments :: page_link(${currentPage - 1}, '&lt;')}"></a>
-					</li>
-					<li th:class="${currentPage != i ? 'page-item': 'page-item active'}" th:each="i : ${#numbers.sequence(1, totalPages, 1)}">
-						<a th:replace="~{fragments :: page_link(${i}, ${i})}"></a>
-					</li>
-					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
-						<a th:replace="~{fragments :: page_link(${currentPage + 1}, '&gt;')}"></a>
-					</li>
-					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
-						<a th:replace="~{fragments :: page_link(${totalPages}, '&gt;&gt;')}"></a>
-					</li>
-				</ul>
-			</nav>
-		</div>
-
 		<div class="modal fade text-center" id="confirmModal">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -137,20 +97,27 @@
 				</div>
 			</div>
 		</div>
+		
+		<div th:if="${keyword != null}" class="text-center">
+			<span>계층 내부 목록은 검색하지 않습니다.</span>
+			<div th:replace="~{fragments :: pagination('/categories', '카테고리')}"></div>
+		</div>
+		<th:block th:unless="${keyword != null}">
+			<div th:replace="~{fragments :: pagination('/categories', '최상위 카테고리')}"></div>
+		</th:block>
+
+		<div th:replace="~{modal_fragments :: confirm_modal}"></div>
 
 		<div th:replace="~{fragments :: footer}"></div>
 		
 	</div>
 	<script type="text/javascript">
+		const moduleURL = "[[@{/categories}]]";
+	
 		$(document).ready(function() {
 			$(".link-delete").on("click", function(e) {
 				e.preventDefault();
-				link = $(this);
-				userId = link.attr("userId");
-
-				$("#yesButton").attr("href", link.attr("href"));
-				$("#confirmText").text("이 사용자를 삭제 하시겠습니까?");
-				$("#confirmModal").modal();
+				showDeleteConfirmModal($(this), "카테고리");
 			});
 		});
 
@@ -158,5 +125,6 @@
 			window.location = "[[@{/users}]]";
 		}
 	</script>
+	<script th:src="@{/js/common_list.js}"></script>
 </body>
 </html>

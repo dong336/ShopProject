@@ -61,7 +61,7 @@
 		<div th:replace="~{fragments :: footer}"></div>
 	</div>
 	<script type="text/javascript">
-		moduleURL = "[[@{/categories}]]";
+		const moduleURL = "[[@{/categories}]]";
 		
 		function checkUnique(form) {
 			cateId = $("#id").val();

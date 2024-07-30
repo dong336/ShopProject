@@ -19,8 +19,77 @@
 		<p>Shop 관리자 - Copyright &copy; Shop</p>
 	</div>
 
-	<th th:fragment="column_link(fieldName, columnLabel, removeTag)" th:remove="${removeTag}"><a th:if="${sortField != fieldName}" class="text-white" th:href="@{'/users/page/' + ${currentPage} + '?sortField=' + ${fieldName} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${columnLabel}]]</a> <a th:unless="${sortField != fieldName}" class="text-white" th:href="@{'/users/page/' + ${currentPage} + '?sortField=' + ${fieldName} + '&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${columnLabel}]]</a> <span th:if="${sortField == fieldName}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+	<th th:fragment="column_link(fieldName, columnLabel, removeTag)" 
+		th:remove="${removeTag}">
+		<a th:if="${sortField != fieldName}" class="text-white" th:href="@{'/users/page/' + ${currentPage} + '?sortField=' + ${fieldName} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${columnLabel}]]</a>
+		<a th:unless="${sortField != fieldName}" class="text-white" th:href="@{'/users/page/' + ${currentPage} + '?sortField=' + ${fieldName} + '&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${columnLabel}]]</a>
+		<span th:if="${sortField == fieldName}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}">
+		</span>
+	</th>
 
-	<a th:fragment="page_link(pageNum, label)" class="page-link" th:href="@{'/users/page/' + ${pageNum} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${label}]]</a>
+	<a th:fragment="page_link(moduleURL, pageNum, label)" 
+		th:href="@{${moduleURL} + '/page/' + ${pageNum} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}"
+		class="page-link">[[${label}]]</a>
+	
+	<div th:fragment="category_status" th:remove="tag">
+		<a th:if="${cate.enabled == true}" class="fas fa-check-circle fa-2x icon-green" th:href="@{'/categories/' + ${cate.id} + '/enabled/false'}" title="비활성화"></a> 
+		<a th:if="${cate.enabled == false}" class="fas fa-check-circle fa-2x icon-dark" th:href="@{'/categories/' + ${cate.id} + '/enabled/true'}" title="활성화"></a>
+	</div>
+	
+	<div th:fragment="category_actions" th:remove="tag">
+		<a class="fa-solid fa-pen-to-square fa-2x icon-green" th:href="@{'/categories/edit/' + ${cate.id}}" title="수정"></a> 
+		&nbsp;
+		<th:block th:if="${cate.hasChildren == false}">
+			<a th:entityId="${cate.id}" class="fa-solid fa-trash fa-2x icon-dark link-delete" th:href="@{'/categories/delete/' + ${cate.id}}" title="삭제"></a>
+		</th:block>
+	</div>
+	
+	<div th:fragment="pagination(moduleURL, entityName)" th:remove="tag">
+		<div class="text-center m-1" th:if="${totalItems > 0}">
+			<span>[[${entityName}]], [[${startCount}]] ~ [[${endCount}]], 전체: [[${totalItems}]]</span>
+		</div>
+		<div class="text-center m-1" th:unless="${totalItems > 0}">
+			<span>[[${entityName}]] 없음</span>
+		</div>
+		
+		<div th:if="${totalPages > 1}">
+			<nav>
+				<ul class="pagination justify-content-center flex-wrap">
+					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(${moduleURL}, 1, '&lt;&lt;')}"></a>
+					</li>
+					<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(${moduleURL}, ${currentPage - 1}, '&lt;')}"></a>
+					</li>
+					<li th:class="${currentPage != i ? 'page-item': 'page-item active'}" th:each="i : ${#numbers.sequence(1, totalPages, 1)}">
+						<a th:replace="~{fragments :: page_link(${moduleURL}, ${i}, ${i})}"></a>
+					</li>
+					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(${moduleURL}, ${currentPage + 1}, '&gt;')}"></a>
+					</li>
+					<li th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="~{fragments :: page_link(${moduleURL}, ${totalPages}, '&gt;&gt;')}"></a>
+					</li>
+					</ul>
+				</nav>
+		</div>
+	</div>
+	
+	<div th:fragment="search_form(moduleURL)" th:remove="none">
+		<form th:action="@{${moduleURL}}" class="form-inline m-3">
+			<input type="hidden" name="sortField" th:value="${sortField}" />
+			<input type="hidden" name="sortDir" th:value="${sortDir}" />
+			검색:&nbsp;
+			<input type="search" name="keyword" th:value="${keyword}" class="form-control" required />
+			&nbsp;&nbsp;
+			<button type="submit" class="btn btn-primary">
+				<i class="fas fa-search"></i>
+			</button>
+			&nbsp;&nbsp;
+			<button type="button" class="btn btn-secondary" onclick="clearFilter();">
+				<i class="fas fa-eraser"></i>
+			</button>
+		</form>
+	</div>
 </body>
 </html>
