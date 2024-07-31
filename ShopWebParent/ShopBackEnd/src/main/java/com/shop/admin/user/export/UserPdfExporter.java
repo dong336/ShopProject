@@ -16,6 +16,7 @@ import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.shop.admin.AbstractExporter;
 import com.shop.common.entity.User;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class UserPdfExporter extends AbstractExporter {
 
     public void export(List<User> listUsers, HttpServletResponse response) throws IOException {
-	super.setResponseHeader(response, "application/pdf; utf-8", ".pdf");
+	super.setResponseHeader(response, "application/pdf; utf-8", ".pdf", "사용자_");
 
 	Document document = new Document(PageSize.A4);
 	PdfWriter.getInstance(document, response.getOutputStream());

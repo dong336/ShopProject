@@ -19,6 +19,7 @@ import com.shop.admin.FileUploadUtil;
 import com.shop.common.entity.Category;
 
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/categories")
@@ -68,7 +69,7 @@ public class CategoryController {
 
     @GetMapping("/new")
     public String newCategory(Model model) {
-	List<Category> listCategories = service.listCategoriesUsedInForm();
+	List<Category> listCategories = service.listCategoriesUsedInForm("--");
 
 	model.addAttribute("category", new Category());
 	model.addAttribute("listCategories", listCategories);
@@ -104,7 +105,7 @@ public class CategoryController {
     public String editCategory(@PathVariable(name = "id") Integer id, Model model, RedirectAttributes redirectAttributes) {
 	try {
 	    Category category = service.get(id);
-	    List<Category> listCategories = service.listCategoriesUsedInForm();
+	    List<Category> listCategories = service.listCategoriesUsedInForm("--");
 
 	    model.addAttribute("category", category);
 	    model.addAttribute("listCategories", listCategories);
@@ -143,5 +144,13 @@ public class CategoryController {
 	}
 	
 	return "redirect:/categories";
+    }
+    
+    @GetMapping("/export/csv")
+    public void exportToCSV(HttpServletResponse response) throws IOException {
+	List<Category> listUsers = service.listCategoriesUsedInForm("  ");
+	CategoryCsvExporter exporter = new CategoryCsvExporter();
+
+	exporter.export(listUsers, response);
     }
 }

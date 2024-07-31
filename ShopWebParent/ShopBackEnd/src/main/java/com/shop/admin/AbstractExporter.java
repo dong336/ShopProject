@@ -1,4 +1,4 @@
-package com.shop.admin.user.export;
+package com.shop.admin;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -11,10 +11,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class AbstractExporter {
 
-    public void setResponseHeader(HttpServletResponse response, String contentType, String extension) throws IOException {
+    public void setResponseHeader(HttpServletResponse response, String contentType, 
+	    String extension, String prefix) throws IOException {
 	DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 	String timestamp = dateFormatter.format(new Date());
-	String fileName = "사용자_" + timestamp + extension;
+	String fileName = prefix + timestamp + extension;
 
 	String encodedFilename = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
 

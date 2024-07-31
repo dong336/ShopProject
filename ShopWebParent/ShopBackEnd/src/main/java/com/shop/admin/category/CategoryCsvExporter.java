@@ -1,4 +1,4 @@
-package com.shop.admin.user.export;
+package com.shop.admin.category;
 
 import java.io.IOException;
 import java.util.List;
@@ -8,23 +8,23 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import com.shop.admin.AbstractExporter;
-import com.shop.common.entity.User;
+import com.shop.common.entity.Category;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-public class UserCsvExporter extends AbstractExporter {
+public class CategoryCsvExporter extends AbstractExporter {
 
-    public void export(List<User> listUsers, HttpServletResponse response) throws IOException {
-	super.setResponseHeader(response, "text/csv; utf-8", ".csv", "사용자_");
+    public void export(List<Category> listCategories, HttpServletResponse response) throws IOException {
+	super.setResponseHeader(response, "text/csv; utf-8", ".csv", "카테고리_");
 
 	ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
 
-	String[] csvHeader = { "ID", "메일", "이름", "권한", "활성화" };
-	String[] fieldMapping = { "id", "email", "name", "roles", "enabled" };
+	String[] csvHeader = { "ID", "이름" };
+	String[] fieldMapping = { "id", "name" };
 
 	csvWriter.writeHeader(csvHeader);
 
-	for (User user : listUsers) {
+	for (Category user : listCategories) {
 	    csvWriter.write(user, fieldMapping);
 	}
 
