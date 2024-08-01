@@ -21,7 +21,6 @@ public class JwtTokenService {
     }
 
     public String generateToken(Authentication authentication) {
-
         var scope = authentication
                         .getAuthorities()
                         .stream()

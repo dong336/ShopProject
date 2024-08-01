@@ -3,22 +3,19 @@ package com.shop.admin.security;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.annotation.Resource;
+
 @RestController
 public class JwtAuthenticationController {
-    
-    private final JwtTokenService tokenService;
-    
-    private final AuthenticationManager authenticationManager;
-
-    public JwtAuthenticationController(JwtTokenService tokenService, 
-            AuthenticationManager authenticationManager) {
-        this.tokenService = tokenService;
-        this.authenticationManager = authenticationManager;
-    }
+    @Resource
+    private JwtTokenService tokenService;
+    @Resource
+    private AuthenticationManager authenticationManager;
 
     @PostMapping("/authenticate")
     public ResponseEntity<JwtTokenResponse> generateToken(
@@ -31,10 +28,11 @@ public class JwtAuthenticationController {
         var authentication = authenticationManager.authenticate(authenticationToken);
         
         var token = tokenService.generateToken(authentication);
+        ShopUserDetails userDetails = (ShopUserDetails) authentication.getPrincipal();
         
-        return ResponseEntity.ok(new JwtTokenResponse(token));
+        return ResponseEntity.ok(new JwtTokenResponse(token, userDetails.getRealname()));
     }
 }
 
 record JwtTokenRequest(String username, String password) {}
-record JwtTokenResponse(String token) {}
+record JwtTokenResponse(String token, String realname) {}

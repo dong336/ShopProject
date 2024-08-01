@@ -13,7 +13,6 @@ import com.shop.common.entity.Role;
 import com.shop.common.entity.User;
 
 public class ShopUserDetails implements UserDetails {
-
     private User user;
     
     public ShopUserDetails(User user) {
