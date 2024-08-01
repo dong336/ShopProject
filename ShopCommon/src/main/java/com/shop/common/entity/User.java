@@ -29,7 +29,7 @@ public class User {
     private String email;
 
     @Comment("패스워드")
-    @Column(length = 64, nullable = false)
+    @Column(length = 200, nullable = false)
     private String password;
 
     @Comment("이름")

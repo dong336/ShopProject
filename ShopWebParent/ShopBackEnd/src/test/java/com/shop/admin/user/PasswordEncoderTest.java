@@ -6,16 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class PasswordEncoderTest {
-	@Test
-	public void testEncodePassword() {
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		String rawPassword = "1234";
-		String encodedPassword = passwordEncoder.encode(rawPassword);
-		
-		System.out.println(encodedPassword);
-		
-		boolean matches = passwordEncoder.matches(rawPassword, encodedPassword);
-		
-		assertThat(matches).isTrue();
-	}
+    @Test
+    public void testEncodePassword() {
+	BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+	String rawPassword = "12345678";
+	String encodedPassword = passwordEncoder.encode(rawPassword);
+
+	System.out.println(encodedPassword);
+
+	boolean matches = passwordEncoder.matches(rawPassword, encodedPassword);
+
+	assertThat(matches).isTrue();
+    }
 }
